@@ -1,0 +1,23 @@
+{
+  "name": "pruebatecnicatek",
+  "version": "1.0.0",
+  "description": "Tecnologías: ExpressJS\r Crear un servicio web que consuma un API de personas\r contagiadas con COVID en Colombia, se debe entregar la data\r discriminada por género, rangos de edades 0-20, 20-40, 40 o\r mas\r https://www.datos.gov.co/resource/gt2j-8ykr.json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgmontoya1/PruebaTecnicaTek.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgmontoya1/PruebaTecnicaTek/issues"
+  },
+  "homepage": "https://github.com/jgmontoya1/PruebaTecnicaTek#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.2"
+  }
+}
