@@ -4,8 +4,22 @@ var app = express();
 var bodyParser = require('body-parser');
 var request = require("request");
 
-// URL con contenido JSON demostrativo.
+// URL con con informacion de contagiados.
 var url = "https://www.datos.gov.co/resource/gt2j-8ykr.json"
+
+// estructura de datos a usar
+data_filtrada = {
+    masculino: {
+        '0-20': [],
+        '20-40': [],
+        '40 o mas': []
+    },
+    femenino: {
+        '0-20': [],
+        '20-40': [],
+        '40 o mas': []
+    }
+}
 
 // Soporte para bodies codificados en jsonsupport.
 app.use(bodyParser.json());
@@ -21,20 +35,7 @@ app.get('/contagiados', function(req, res) {
 	    if (!error && response.statusCode === 200) {
             // Convert JSON to javascript object
             contagiados = JSON.parse(body)
-
-            // filtrar contagiado por tango de edad y genero 
-            data_filtrada = {
-                masculino: {
-                    '0-20': obtener_rangoEdad_genero(contagiados, 0, 20, "M"),
-                    '20-40': obtener_rangoEdad_genero(contagiados, 20, 40, "M"),
-                    '40 o mas': obtener_rangoEdad_genero(contagiados, 40, "M")
-                },
-                femenino: {
-                    '0-20': obtener_rangoEdad_genero(contagiados, 0, 20, "F"),
-                    '20-40': obtener_rangoEdad_genero(contagiados, 20, 40, "F"),
-                    '40 o mas': obtener_rangoEdad_genero(contagiados, 40, "F")
-                }
-            }   
+            contagiados.forEach(clasificar_contagiados);  
 
 	    	// Pintamos la respuesta JSON en navegador.
 	        res.send(data_filtrada) 
@@ -42,19 +43,29 @@ app.get('/contagiados', function(req, res) {
 	})
 });
 
-function obtener_rangoEdad_genero (contagiados, minEdad, maxEdad, genero) {
-    if (minEdad == 40) {
-        return contagiados.filter(
-            contagiado => parseInt(contagiado.edad) >= minEdad && contagiado.sexo == genero
-        );
-    }
+function clasificar_contagiados (contagiado) {
+    switch (contagiado.sexo) {
+        case 'F':
+            clasificar_en_edades(contagiado, 'femenino');
+            break;
 
-    return (
-        contagiados.filter(
-            contagiado => (parseInt(contagiado.edad) >= minEdad && parseInt(contagiado.edad) < maxEdad) && 
-                        contagiado.sexo == genero
-        )
-    );
+        case 'M':
+            clasificar_en_edades(contagiado, 'masculino');
+            break;
+
+        default:
+            break;
+    }
+}
+
+function clasificar_en_edades(contagiado, sexo) {
+    if (contagiado.edad >= 0 && contagiado.edad < 20) {
+        data_filtrada[sexo]['0-20'].push(contagiado)
+    } else if (contagiado.edad >= 20 && contagiado.edad < 40) {
+        data_filtrada[sexo]['20-40'].push(contagiado)
+    } else {
+        data_filtrada[sexo]['40 o mas'].push(contagiado)
+    }
 }
   
 var server = app.listen(8888, () => {
